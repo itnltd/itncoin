@@ -1,0 +1,11 @@
+[Protocol]
+exec=itn-qt '%u'
+protocol=itn
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false

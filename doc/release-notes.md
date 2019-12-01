@@ -1,107 +1,120 @@
-*After branching off for a major version release of Bitcoin Core, use this
-template to create the initial release notes draft.*
+ITN Core version 3.0.4 is now available from:
 
-*The release notes draft is a temporary file that can be added to by anyone. See
-[/doc/developer-notes.md#release-notes](/doc/developer-notes.md#release-notes)
-for the process.*
+  <https://github.com/itnproject/itn/releases>
 
-*Create the draft, named* "*version* Release Notes Draft"
-*(e.g. "0.20.0 Release Notes Draft"), as a collaborative wiki in:*
+This is a new minor-revision version release, including various bug fixes and
+performance improvements, as well as updated translations.
 
-https://github.com/bitcoin-core/bitcoin-devwiki/wiki/
+Please report bugs using the issue tracker at github:
 
-*Before the final release, move the notes back to this git repository.*
+  <https://github.com/itnproject/itn/issues>
 
-*version* Release Notes Draft
-===============================
 
-Bitcoin Core version *version* is now available from:
+Mandatory Update
+==============
 
-  <https://bitcoincore.org/bin/bitcoin-core-*version*/>
+ITN Core v3.0.4 is a mandatory update for all users. This release contains various updates/fixes pertaining to the zITN protocol, supply tracking, block transmission and relaying, as well as usability and quality-of-life updates to the GUI.
 
-This release includes new features, various bug fixes and performance
-improvements, as well as updated translations.
+Users will have a grace period to update their clients before versions prior to this release are no longer allowed to connect to this (and future) version(s).
 
-Please report bugs using the issue tracker at GitHub:
-
-  <https://github.com/bitcoin/bitcoin/issues>
-
-To receive security and update notifications, please subscribe to:
-
-  <https://bitcoincore.org/en/list/announcements/join/>
 
 How to Upgrade
 ==============
 
-If you are running an older version, shut it down. Wait until it has completely
-shut down (which might take a few minutes for older versions), then run the
-installer (on Windows) or just copy over `/Applications/Bitcoin-Qt` (on Mac)
-or `bitcoind`/`bitcoin-qt` (on Linux).
+If you are running an older version, shut it down. Wait until it has completely shut down (which might take a few minutes for older versions), then run the installer (on Windows) or just copy over /Applications/ITN-Qt (on Mac) or itnd/itn-qt (on Linux).
 
-Upgrading directly from a version of Bitcoin Core that has reached its EOL is
-possible, but it might take some time if the datadir needs to be migrated. Old
-wallet versions of Bitcoin Core are generally supported.
 
 Compatibility
 ==============
 
-Bitcoin Core is supported and extensively tested on operating systems using
-the Linux kernel, macOS 10.10+, and Windows 7 and newer. It is not recommended
-to use Bitcoin Core on unsupported systems.
+ITN Core is extensively tested on multiple operating systems using
+the Linux kernel, macOS 10.8+, and Windows Vista and later.
 
-Bitcoin Core should also work on most other Unix-like systems but is not
-as frequently tested on them.
+Microsoft ended support for Windows XP on [April 8th, 2014](https://www.microsoft.com/en-us/WindowsForBusiness/end-of-xp-support),
+No attempt is made to prevent installing or running the software on Windows XP, you
+can still do so at your own risk but be aware that there are known instabilities and issues.
+Please do not report issues about Windows XP to the issue tracker.
 
-From Bitcoin Core 0.17.0 onwards, macOS versions earlier than 10.10 are no
-longer supported, as Bitcoin Core is now built using Qt 5.9.x which requires
-macOS 10.10+. Additionally, Bitcoin Core does not yet change appearance when
-macOS "dark mode" is activated.
+ITN Core should also work on most other Unix-like systems but is not
+frequently tested on them.
 
-In addition to previously supported CPU platforms, this release's pre-compiled
-distribution provides binaries for the RISC-V platform.
+### :exclamation::exclamation::exclamation: MacOS 10.13 High Sierra :exclamation::exclamation::exclamation:
 
-Notable changes
+**Currently there are issues with the 3.0.x gitian releases on MacOS version 10.13 (High Sierra), no reports of issues on older versions of MacOS.**
+
+
+Notable Changes
 ===============
 
-New RPCs
---------
+Refactoring of zITN Spend Validation Code
+---------------------
+zITN spend validation was too rigid and did not give enough slack for reorganizations. Many staking wallets were unable to reorganize back to the correct blockchain when they had an orphan stake which contained a zITN spend. zITN double spending validation has been refactored to properly account for reorganization.
 
-New settings
-------------
+Money Supply Calculation Fix
+---------------------
+Coin supply incorrectly was counting spent zITN as newly minted coins that are added to the coin supply, thus resulting in innacurate coin supply data.
 
-Updated settings
-----------------
+The coin supply is now correctly calculated and if a new wallet client is synced from scratch or if `-reindex=1` is used then the correct money supply will be calculated. If neither of these two options are used, the wallet client will automatically reindex the money supply calculations upon the first time opening the software after updating to v3.0.4. The reindex takes approximately 10-60 minutes depending on the hardware used. If the reindex is exited mid-process, it will continue where it left off upon restart.
 
-Updated RPCs
-------------
+Better Filtering of Transactions in Stake Miner
+---------------------
+The stake miner code now filters out zITN double spends that were rarely being slipped into blocks (and being rejected by peers when sent broadcast).
 
-Note: some low-level RPC changes mainly useful for testing are described in the
-Low-level Changes section below.
+More Responsive Shutdown Requests
+---------------------
+When computationally expensive accumulator calculations are being performed and the user requests to close the application, the wallet will exit much sooner than before.
 
-GUI changes
------------
 
-Wallet
-------
-
-- The wallet now by default uses bech32 addresses when using RPC, and creates native segwit change outputs.
-- The way that output trust was computed has been fixed in #16766, which impacts confirmed/unconfirmed balance status and coin selection.
-
-Low-level changes
+3.0.4 Change log
 =================
 
-Tests
------
+Detailed release notes follow. This overview includes changes that affect
+behavior, not code moves, refactors and string updates. For convenience in locating
+the code changes and accompanying discussion, both the pull request and
+git merge commit are mentioned.
 
-- `-fallbackfee` was 0 (disabled) by default for the main chain, but 0.0002 by default for the test chains. Now it is 0
-  by default for all chains. Testnet and regtest users will have to add `fallbackfee=0.0002` to their configuration if
-  they weren't setting it and they want it to keep working like before. (#16524)
+### P2P Protocol and Network Code
+- #294 `27c0943` Add additional checks for txid for zitn spend. (presstab)
+- #301 `b8392cd` Refactor zITN tx counting code. Add a final check in ConnectBlock() (presstab)
+- #306 `77dd55c` [Core] Don't send not-validated blocks (Mrs-X)
+- #312 `5d79bea` [Main] Update last checkpoint data (Fuzzbawls)
+- #325 `7d98ebe` Reindex zITN blocks and correct stats. (presstab)
+- #327 `aa1235a` [Main] Don't limit zITN spends from getting into the mempool (Fuzzbawls)
+- #329 `19b38b2` Update checkpoints. (presstab)
+- #331 `b1fb710` [Consensus] Bump protocol. Activate via Spork 15. (rejectedpromise)
+
+### Wallet
+- #308 `bd8a982` [Minting] Clear mempool after invalid block from miner (presstab)
+- #316 `ed192cf` [Minting] Better filtering of zITN serials in miner. (presstab)
+
+### GUI
+- #309 `f560ffc` [UI] Better error message when too much inputs are used for spending zITN (Mrs-X)
+- #317 `b27cb72` [UI] Wallet repair option to resync from scratch (Mrs-X)
+- #323 `2b648be` [UI] Balance fix + bubble-help + usability improvements (Mrs-X)
+- #324 `8cdbb5d` disable negative confirmation numbers. (Mrs-X)
+
+### Build System
+- #322 `a91feb3` [Build] Add compile/link summary to configure (Fuzzbawls)
+
+### Miscellaneous
+- #298 `3580394` Reorg help to stop travis errors (Jon Spock)
+- #302 `efb648b` [Cleanup] Remove unused variables (rejectedpromise)
+- #307 `dbd801d` Remove hard-coded GIT_ARCHIVE define (Jon Spock)
+- #314 `f1c830a` Fix issue causing crash when itnd --help was invoked (Jon Spock)
+- #326 `8b6a13e` Combine 2 LogPrintf statement to reduce debug.log clutter (Jon Spock)
+- #328 `a6c18c8` [Main] ITN not responding on user quitting app (Aaron Langford)
+
 
 Credits
 =======
 
 Thanks to everyone who directly contributed to this release:
+- Fuzzbawls
+- Jon Spock
+- Mrs-X
+- furszy
+- presstab
+- rejectedpromise
+- aaronlangford31
 
-
-As well as to everyone that helped with translations on
-[Transifex](https://www.transifex.com/bitcoin/bitcoin/).
+As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/itn-project-translations/).

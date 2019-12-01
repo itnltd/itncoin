@@ -1,0 +1,26 @@
+[Unit]
+Description=ITN's distributed currency daemon
+After=network.target
+
+[Service]
+User=itn
+Group=itn
+
+Type=forking
+PIDFile=/var/lib/itnd/itnd.pid
+
+ExecStart=/usr/bin/itnd -daemon -pid=/var/lib/itnd/itnd.pid \
+          -conf=/etc/itn/itn.conf -datadir=/var/lib/itnd
+
+ExecStop=-/usr/bin/itn-cli -conf=/etc/itn/itn.conf \
+         -datadir=/var/lib/itnd stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

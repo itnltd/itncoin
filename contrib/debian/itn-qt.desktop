@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=ITN
+Comment=ITN P2P Cryptocurrency
+Comment[fr]=ITN, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=ITN, eşten eşe kriptografik sanal para birimi
+Exec=itn-qt %u
+Terminal=false
+Type=Application
+Icon=itn128
+MimeType=x-scheme-handler/itn;
+Categories=Office;Finance;

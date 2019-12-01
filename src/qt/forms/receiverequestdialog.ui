@@ -22,11 +22,14 @@
      <property name="minimumSize">
       <size>
        <width>300</width>
-       <height>320</height>
+       <height>300</height>
       </size>
      </property>
      <property name="toolTip">
       <string>QR Code</string>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
      </property>
      <property name="textFormat">
       <enum>Qt::PlainText</enum>
@@ -54,10 +57,13 @@
       </size>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Box</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
      </property>
      <property name="tabChangesFocus">
       <bool>true</bool>
@@ -127,7 +133,7 @@
   <customwidget>
    <class>QRImageWidget</class>
    <extends>QLabel</extends>
-   <header>qt/qrimagewidget.h</header>
+   <header>receiverequestdialog.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
